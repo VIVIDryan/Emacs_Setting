@@ -27,7 +27,7 @@
 (setq user-full-name "Travis Chen"
       user-mail-address "cxqlove1999@outlook.com"
       calendar-latitude 39.85
-      calendar-longitude 116.48
+      calendar-longitude 117
       calendar-location-name "Beijing, CN")
 ;;theme
 (load-theme 'spacemacs-dark)
