@@ -1,13 +1,3 @@
-;;(load-theme 'spacemacs)
-(setq backup-directory-alist
-`((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-`((".*" ,temporary-file-directory t)))
-
-(setq delete-by-moving-to-trash t)
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-
-
 (require 'package)
 (setq package-enable-at-startup nil)
 (setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
@@ -15,7 +5,7 @@
 			 ("org" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
 			 ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa-stable/")))
 
-
+;; Package Initialize
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -32,6 +22,95 @@
 
 ;; On non-Guix systems, "ensure" packages by default
 (setq use-package-always-ensure t)
+
+;; Personal Information
+(setq user-full-name "Travis Chen"
+      user-mail-address "cxqlove1999@outlook.com"
+      calendar-latitude 39.85
+      calendar-longitude 116.48
+      calendar-location-name "Beijing, CN")
+;;theme
+(load-theme 'spacemacs-dark)
+
+
+;; Set Font
+;; need to install font Inconsolata
+(setq trvs/default-fixed-font "Inconsolata")
+(setq trvs/default-fixed-font-size 140)
+(setq trvs/current-fixed-font-size trvs/default-fixed-font-size)
+(set-face-attribute 'default nil
+		    :family trvs/default-fixed-font
+		    :height trvs/current-fixed-font-size
+		    )
+(set-fontset-font "fontset-default" 'han (font-spec :family "KaiTi" :height trvs/current-fixed-font-size))
+(set-face-attribute 'fixed-pitch nil
+		    :family trvs/default-fixed-font
+		    :height trvs/current-fixed-font-size
+		    )
+
+(setq trvs/default-variable-font "Libre Baskerville")
+(setq trvs/default-variable-font-size 130)
+(setq trvs/current-variable-font-size trvs/default-variable-font-size)
+(set-face-attribute 'variable-pitch nil
+                    :family trvs/default-variable-font
+                    :height trvs/current-variable-font-size
+		    )
+(setq trvs/font-change-increment 1.1)
+(defun trvs/set-font-size ()
+;;"Change default, fixed-pitch, and variable-pitch font sizes to match respective variables."
+  (set-face-attribute 'default nil
+                      :height trvs/current-fixed-font-size)
+  (set-face-attribute 'fixed-pitch nil
+                      :height trvs/current-fixed-font-size)
+  (set-face-attribute 'variable-pitch nil
+                      :height trvs/current-variable-font-size))
+  (set-fontset-font "fontset-default" 'han (font-spec :family "KaiTi" :height trvs/current-fixed-font-size))
+  
+
+(defun trvs/reset-font-size ()
+;;  "Revert font sizes back to defaults."
+  (interactive)
+  (setq trvs/current-fixed-font-size trvs/default-fixed-font-size)
+  (setq trvs/current-variable-font-size trvs/default-variable-font-size)
+  (trvs/set-font-size))
+
+(defun trvs/increase-font-size ()
+;;  "Increase current font sizes by a factor of `hrs/font-change-increment'."
+  (interactive)
+  (setq trvs/current-fixed-font-size
+        (ceiling (* trvs/current-fixed-font-size trvs/font-change-increment)))
+  (setq trvs/current-variable-font-size
+        (ceiling (* trvs/current-variable-font-size trvs/font-change-increment)))
+  (trvs/set-font-size))
+
+(defun trv/decrease-font-size ()
+;;  "Decrease current font sizes by a factor of `hrs/font-change-increment', down to a minimum size of 1."
+  (interactive)
+  (setq trvs/current-fixed-font-size
+        (max 1
+             (floor (/ trvs/current-fixed-font-size trvs/font-change-increment))))
+  (setq trvs/current-variable-font-size
+        (max 1
+             (floor (/ trvs/current-variable-font-size trvs/font-change-increment))))
+  (trvs/set-font-size))
+
+(define-key global-map (kbd "C-)") 'trvs/reset-font-size)
+(define-key global-map (kbd "C-+") 'trvs/increase-font-size)
+(define-key global-map (kbd "C-=") 'trvs/increase-font-size)
+(define-key global-map (kbd "C-_") 'trvs/decrease-font-size)
+(define-key global-map (kbd "C--") 'trvs/decrease-font-size)
+
+(trvs/reset-font-size)
+
+
+;;(load-theme 'spacemacs t)
+(setq backup-directory-alist
+`((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+`((".*" ,temporary-file-directory t)))
+
+(setq delete-by-moving-to-trash t)
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
 (use-package counsel
   :demand t
@@ -52,13 +131,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(cursor-type 'box)
- '(package-selected-packages '(counsel use-package ivy command-log-mode)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil :family "Source Code Pro" :foundry "outline" :slant normal :weight normal :height 120 :width normal)))))
+ '(custom-safe-themes
+   '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
+ '(package-selected-packages '(spacemacs-theme counsel use-package ivy command-log-mode))
+ '(py-shell-virtualenv-root "D:/Anaconda/envs")
+ '(python-shell-virtualenv-root "D:/Anaconda/envs"))
+
 
 (use-package org-bullets
   :config
@@ -108,6 +186,42 @@
   (progn
     (setq alert-default-style 'libnotify)
     ))
+;; org images
+(setq org-image-actual-width '(350))
+
+;; org drawing
+(setq org-ditaa-jar-path "C:/Users/Travis/.emacs.d/drawing/ditaa/ditaa.jar")
+(setq org-plantuml-jar-path "C:/Users/Travis/java/plantuml.jar")
+(add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
+(setq org-babel-results-keyword "results")
+(defun trvs/display-inline-images ()
+  (condition-case nil
+      (org-display-inline-images)
+    (error nil)))
+
+(require 'ob-shell)
+(org-babel-do-load-languages
+ (quote org-babel-load-languages)
+ (quote ((emacs-lisp . t)
+         (dot . t)
+         (ditaa . t)
+         (R . t)
+         (python . t)
+         (ruby . t)
+         (gnuplot . t)
+         (clojure . t)
+         (shell . t)
+         (ledger . t)
+         (org . t)
+         (plantuml . t)
+         (latex . t))))
+; Do not prompt to confirm evaluation
+; This may be dangerous - make sure you understand the consequences
+; of setting this -- see the docstring for details
+(setq org-confirm-babel-evaluate nil)
+
+; Use fundamental mode when editing plantuml blocks with C-c '
+(add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
 
 ;; 配置anaconda
 
@@ -131,9 +245,9 @@
     (global-git-gutter+-mode)))
 
 
-(use-package all-the-icons
-  :after memoize
-  :load-path "site-lisp/all-the-icons")
+;; (use-package all-the-icons
+;;   :after memoize
+;;   :load-path "site-lisp/all-the-icons")
 
 ;; Programming Env
 (defun efs/lsp-mode-setup ()
@@ -141,12 +255,31 @@
   (lsp-headerline-breadcrumb-mode))
 
 (use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook (lsp-mode . efs/lsp-mode-setup)
   :init
-  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-  :config
-  (lsp-enable-which-key-integration t))
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (python-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+;; optionally
+(use-package lsp-ui :commands lsp-ui-mode)
+;; if you are helm user
+;(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;; optionally if you want to use debugger
+(use-package dap-mode)
+;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+;; optional if you want which-key integration
+(use-package which-key
+    :config
+    (which-key-mode))
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :custom
@@ -165,13 +298,13 @@
   :config
   ;; Set up Node debugging
   (require 'dap-node)
-  (dap-node-setup) ;; Automatically installs Node debug adapter if needed
+  (dap-node-setup)) ;; Automatically installs Node debug adapter if needed
 
   ;; Bind `C-c l d` to `dap-hydra` for easy access
-  (general-define-key
-    :keymaps 'lsp-mode-map
-    :prefix lsp-keymap-prefix
-    "d" '(dap-hydra t :wk "debugger")))
+  ;; (general-define-key
+  ;;   :keymaps 'lsp-mode-map
+  ;;   :prefix lsp-keymap-prefix
+  ;;   "d" '(dap-hydra t :wk "debugger")))
 
 (use-package python-mode
   :ensure t
@@ -183,10 +316,42 @@
   (dap-python-debugger 'debugpy)
   :config
   (require 'dap-python))
-(use-package pyvenv
-  :config
-  (pyvenv-mode 1))
+
+;(use-package pyvenv
+;  :config
+;  (pyvenv-mode 1))
 
 (when (eq system-type 'windows-nt)
   (setq explicit-shell-file-name "powershell.exe")
   (setq explicit-powershell.exe-args '()))
+
+;(setenv "WORKON_HOME" "D:/Anaconda/envs")
+(pyvenv-mode 1)
+
+(use-package conda
+  :ensure t
+  :init
+  (setq conda-anaconda-home (expand-file-name "D:/Anaconda"))
+  (setq conda-env-home-directory (expand-file-name "D:/Anaconda/envs")))
+
+;; Productivity
+(use-package flycheck
+  :defer t
+  :hook (lsp-mode . flycheck-mode))
+
+;;Rainbow Mode
+(use-package rainbow-mode
+  :defer t
+  :hook (org-mode
+         emacs-lisp-mode
+         web-mode
+         typescript-mode
+         js2-mode))
+
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

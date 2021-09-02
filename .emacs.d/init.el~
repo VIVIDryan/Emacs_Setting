@@ -1,3 +1,108 @@
+;; Personal Information
+(setq user-full-name "Travis Chen"
+      user-mail-address "cxqlove1999@outlook.com"
+      calendar-latitude 39.85
+      calendar-longitude 116.48
+      calendar-location-name "Beijing, CN")
+
+;; Set Font
+;; need to install font Inconsolata
+(setq trvs/default-fixed-font "Inconsolata")
+(setq trvs/default-fixed-font-size 70)
+(setq trvs/current-fixed-font-size trvs/default-fixed-font-size)
+(set-face-attribute 'default nil
+		    :family trvs/default-fixed-font
+		    :height trvs/current-fixed-font-size
+		    )
+(set-face-attribute 'fixed-pitch nil
+		    :family trvs/default-fixed-font
+		    :height trvs/current-fixed-font-size
+		    )
+
+(setq trvs/default-variable-font "Libre Baskerville")
+(setq trvs/default-variable-font-size 60)
+(setq trvs/current-variable-font-size trvs/default-variable-font-size)
+(set-face-attribute 'variable-pitch nil
+                    :family trvs/default-variable-font
+                    :height trvs/current-variable-font-size
+		    )
+(setq trvs/font-change-increment 1.1)
+(defun trvs/set-font-size ()
+;;"Change default, fixed-pitch, and variable-pitch font sizes to match respective variables."
+  (set-face-attribute 'default nil
+                      :height trvs/current-fixed-font-size)
+  (set-face-attribute 'fixed-pitch nil
+                      :height trvs/current-fixed-font-size)
+  (set-face-attribute 'variable-pitch nil
+                      :height trvs/current-variable-font-size))
+
+(defun trvs/reset-font-size ()
+;;  "Revert font sizes back to defaults."
+  (interactive)
+  (setq trvs/current-fixed-font-size trvs/default-fixed-font-size)
+  (setq trvs/current-variable-font-size trvs/default-variable-font-size)
+  (trvs/set-font-size))
+
+(defun trvs/increase-font-size ()
+;;  "Increase current font sizes by a factor of `hrs/font-change-increment'."
+  (interactive)
+  (setq trvs/current-fixed-font-size
+        (ceiling (* trvs/current-fixed-font-size trvs/font-change-increment)))
+  (setq trvs/current-variable-font-size
+        (ceiling (* trvs/current-variable-font-size trvs/font-change-increment)))
+  (trvs/set-font-size))
+
+(defun trv/decrease-font-size ()
+  "Decrease current font sizes by a factor of `hrs/font-change-increment', down to a minimum size of 1."
+  (interactive)
+  (setq trvs/current-fixed-font-size
+        (max 1
+             (floor (/ trvs/current-fixed-font-size trvs/font-change-increment))))
+  (setq trvs/current-variable-font-size
+        (max 1
+             (floor (/ trvs/current-variable-font-size trvs/font-change-increment))))
+  (trvs/set-font-size))
+
+(define-key global-map (kbd "C-)") 'trvs/reset-font-size)
+(define-key global-map (kbd "C-+") 'trvs/increase-font-size)
+(define-key global-map (kbd "C-=") 'trvs/increase-font-size)
+(define-key global-map (kbd "C-_") 'trvs/decrease-font-size)
+(define-key global-map (kbd "C--") 'trvs/decrease-font-size)
+
+(trvs/reset-font-size)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;;(load-theme 'spacemacs)
 (setq backup-directory-alist
 `((".*" . ,temporary-file-directory)))
@@ -5,16 +110,15 @@
 `((".*" ,temporary-file-directory t)))
 
 (setq delete-by-moving-to-trash t)
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
 
-;; Initialize package sources
 (require 'package)
 (setq package-enable-at-startup nil)
-(setq package-archives '(("melpa" . "https://elpa.emacs-china.org/melpa/")
-                         ("melpa-stable" . "https://elpa.emacs-china.org/stable-melpa/")
-                         ("org" . "https://elpa.emacs-china.org/org/")
-                         ("GNU ELPA" . "https://elpa.emacs-china.org/gnu/")))
-
+(setq package-archives '(("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                         ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+			 ("org" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+			 ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa-stable/")))
 
 
 (package-initialize)
@@ -54,12 +158,7 @@
  ;; If there is more than one, they won't work right.
  '(cursor-type 'box)
  '(package-selected-packages '(counsel use-package ivy command-log-mode)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil :family "Source Code Pro" :foundry "outline" :slant normal :weight normal :height 120 :width normal)))))
+
 
 (use-package org-bullets
   :config
@@ -142,12 +241,31 @@
   (lsp-headerline-breadcrumb-mode))
 
 (use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook (lsp-mode . efs/lsp-mode-setup)
   :init
-  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
-  :config
-  (lsp-enable-which-key-integration t))
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (python-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+;; optionally
+(use-package lsp-ui :commands lsp-ui-mode)
+;; if you are helm user
+;(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+;; if you are ivy user
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;; optionally if you want to use debugger
+(use-package dap-mode)
+;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+;; optional if you want which-key integration
+(use-package which-key
+    :config
+    (which-key-mode))
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :custom
@@ -166,13 +284,13 @@
   :config
   ;; Set up Node debugging
   (require 'dap-node)
-  (dap-node-setup) ;; Automatically installs Node debug adapter if needed
+  (dap-node-setup)) ;; Automatically installs Node debug adapter if needed
 
   ;; Bind `C-c l d` to `dap-hydra` for easy access
-  (general-define-key
-    :keymaps 'lsp-mode-map
-    :prefix lsp-keymap-prefix
-    "d" '(dap-hydra t :wk "debugger")))
+  ;; (general-define-key
+  ;;   :keymaps 'lsp-mode-map
+  ;;   :prefix lsp-keymap-prefix
+  ;;   "d" '(dap-hydra t :wk "debugger")))
 
 (use-package python-mode
   :ensure t
@@ -184,20 +302,34 @@
   (dap-python-debugger 'debugpy)
   :config
   (require 'dap-python))
-(use-package pyvenv
-  :config
-  (pyvenv-mode 1))
 
-(defun shell-compile ()
-      (interactive)
-      (shell-command (concat "python " (buffer-file-name)))
-      (if (<= (* 2 (window-height)) (frame-height))
-          (enlarge-window 20)
-        (/ (frame-height) 2)))
-    (add-hook 'python-mode-hook
-              '(lambda ()
-                 (define-key (kbd "C-c C-c") 'shell-compile python-mode-map)))
+;(use-package pyvenv
+;  :config
+;  (pyvenv-mode 1))
 
 (when (eq system-type 'windows-nt)
   (setq explicit-shell-file-name "powershell.exe")
   (setq explicit-powershell.exe-args '()))
+
+;(setenv "WORKON_HOME" "D:/Anaconda/envs")
+(pyvenv-mode 1)
+
+(use-package conda
+  :ensure t
+  :init
+  (setq conda-anaconda-home (expand-file-name "D:/Anaconda"))
+  (setq conda-env-home-directory (expand-file-name "D:/Anaconda/envs")))
+
+;; Productivity
+(use-package flycheck
+  :defer t
+  :hook (lsp-mode . flycheck-mode))
+
+;;Rainbow Mode
+(use-package rainbow-mode
+  :defer t
+  :hook (org-mode
+         emacs-lisp-mode
+         web-mode
+         typescript-mode
+         js2-mode))

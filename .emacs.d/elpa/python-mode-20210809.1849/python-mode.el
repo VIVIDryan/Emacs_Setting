@@ -25574,7 +25574,7 @@ Pass ARG to the command `yank'."
 
 (if (getenv "WORKON_HOME")
     (setq virtualenv-workon-home (getenv "WORKON_HOME"))
-  (setq virtualenv-workon-home "~/.virtualenvs"))
+  (setq virtualenv-workon-home "D:/Anaconda/envs/"))
 
 ;;TODO: Move to a generic UTILITY or TOOL package
 (defun virtualenv-filter (predicate sequence)
