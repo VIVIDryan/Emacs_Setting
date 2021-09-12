@@ -27,7 +27,7 @@
 (setq user-full-name "Travis Chen"
       user-mail-address "cxqlove1999@outlook.com"
       calendar-latitude 39.85
-      calendar-longitude 117
+      calendar-longitude 116.48
       calendar-location-name "Beijing, CN")
 ;;theme
 (load-theme 'spacemacs-dark)
@@ -38,6 +38,7 @@
 (setq trvs/default-fixed-font "Inconsolata")
 (setq trvs/default-fixed-font-size 140)
 (setq trvs/current-fixed-font-size trvs/default-fixed-font-size)
+;;(setq trvs/han-font-size (apply '+ '(trvs/current-fixed-font-size 10)))
 (set-face-attribute 'default nil
 		    :family trvs/default-fixed-font
 		    :height trvs/current-fixed-font-size
@@ -133,21 +134,39 @@
  '(cursor-type 'box)
  '(custom-safe-themes
    '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
- '(package-selected-packages '(spacemacs-theme counsel use-package ivy command-log-mode))
+ '(package-selected-packages
+   '(org-superstar org-plus-contrib org-faces spacemacs-theme counsel use-package ivy command-log-mode))
  '(py-shell-virtualenv-root "D:/Anaconda/envs")
  '(python-shell-virtualenv-root "D:/Anaconda/envs"))
 
 
-(use-package org-bullets
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
+;; (require 'org-tempo)
 
 ;; set the fonts of emacs
 
 ;; set the cursor
 
 ;; org mode
+(use-package org
+  :config
+  (require 'org-tempo))
+;; org-bullets
+(use-package org-superstar
+  :config
+  (setq org-superstar-special-todo-items t)
+  (add-hook 'org-mode-hook (lambda ()
+                             (org-superstar-mode 1))))
+(setq org-hide-leading-stars nil)
+(setq org-superstar-leading-bullet ?\s)
+;; Visibly render mathematical symbols.
+(setq org-pretty-entities t)
+;; Use syntax highlighting in source blocks while editing.
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+
+
+
 (setq org-hide-emphasis-markers t)
 
 (font-lock-add-keywords 'org-mode
@@ -174,12 +193,6 @@
 ;; 设置默认后端为 `xelatex'
 (setq org-latex-compiler "xelatex")
 
-(font-lock-add-keywords 'org-mode
-			'(("^ +\\([-*]\\) "
-			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
 (use-package org-alert
   :defer t
   :config
@@ -190,19 +203,23 @@
 (setq org-image-actual-width '(350))
 
 ;; org drawing
-(setq org-ditaa-jar-path "C:/Users/Travis/.emacs.d/drawing/ditaa/ditaa.jar")
-(setq org-plantuml-jar-path "C:/Users/Travis/java/plantuml.jar")
-(add-hook 'org-babel-after-execute-hook 'bh/display-inline-images 'append)
-(setq org-babel-results-keyword "results")
+(setq org-ditaa-jar-path "~/.emacs.d/drawing/ditaa/ditaa.jar")
+(setq org-plantuml-jar-path "~/java/plantuml.jar")
 (defun trvs/display-inline-images ()
   (condition-case nil
       (org-display-inline-images)
     (error nil)))
 
+(add-hook 'org-babel-after-execute-hook 'trvs/display-inline-images 'append)
+(setq org-babel-results-keyword "results")
+
 (require 'ob-shell)
 (org-babel-do-load-languages
  (quote org-babel-load-languages)
  (quote ((emacs-lisp . t)
+	 (C . t)
+	 (java . t)
+	 (shell . t)
          (dot . t)
          (ditaa . t)
          (R . t)
@@ -213,6 +230,7 @@
          (shell . t)
          (ledger . t)
          (org . t)
+	(css . t)
          (plantuml . t)
          (latex . t))))
 ; Do not prompt to confirm evaluation
@@ -222,6 +240,28 @@
 
 ; Use fundamental mode when editing plantuml blocks with C-c '
 (add-to-list 'org-src-lang-modes (quote ("plantuml" . fundamental)))
+
+;; org mode 里源代码块的缩进设置
+(setq org-src-tab-acts-natively t)
+(setq auto-fill-mode t)
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-table ((t (:family "Sarasa Nerd")))))
+
+
+
+
+
+
+
+
+
+
+
 
 ;; 配置anaconda
 
@@ -349,9 +389,18 @@
          js2-mode))
 
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+
+;;language
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+;; backwards compatibility as default-buffer-file-coding-system
+;; is deprecated in 23.2.
+(if (boundp 'buffer-file-coding-system)
+    (setq-default buffer-file-coding-system 'utf-8)
+  (setq default-buffer-file-coding-system 'utf-8))
+
+;; Treat clipboard input as UTF-8 string first; compound text next, etc.
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
